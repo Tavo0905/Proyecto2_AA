@@ -31,7 +31,7 @@ class ADN:
     """Corresponde a los parámetros a tomar en cuenta para el avance del algoritmo
        genético relacionado con los individuos."""
 
-    def __init__(self, objetivo = [], individuos = 10, pob = [], mutacion = 0.2, gen = 50):
+    def __init__(self, objetivo = False, individuos = 10, pob = [], mutacion = 0.2, gen = 50):
         self.final = objetivo
         self.numIndividuos = individuos
         self.poblacion = pob
@@ -42,7 +42,7 @@ class ADN:
 
 ############ CREACION DE FUNCIONES ###########
 
-def pasarGen(genLabel):
+def pasarGen(genLabel, finLabel):
     """Se encarga de pasar las generaciones de los individuos
         Entradas:
             -Label indicando la generación
@@ -60,7 +60,15 @@ def pasarGen(genLabel):
     else:
         adn.genActual += 1
         genLabel.config(text = "Generación: " + str(adn.genActual))
-        print("hola")
+        adn.poblacion, adn.final = func.reproducir(adn.poblacion, baseDatos.imagen, baseDatos.archivo)
+        if adn.final:
+            finLabel.place(x = 300, y = 200)
+        if adn.genActual >= 50:
+            finLabel.config(text = "Ningún individuo ha llegado al final del laberinto.")
+            finLabel.place(x = 300, y = 200)
+        zoom = cv.resize(baseDatos.imagen, None, fx = 7, fy = 7, interpolation = cv.INTER_LINEAR)
+        cv.imshow("Laberinto", zoom)
+        print(adn.poblacion)
         
 
 def analisisImagen():
@@ -74,7 +82,9 @@ def analisisImagen():
     generacionLabel = tk.Label(pantalla, text = "Generación: 0", font = ("Arial", 20), bg = "gray10", fg = "snow")
     generacionLabel.place(x = 425, y = 0)
 
-    siguiente = tk.Button(pantalla, text = "Siguiente", font = ("Arial", 15), command = lambda: pasarGen(generacionLabel))
+    finalLabel = tk.Label(pantalla, text = "Un individuo a llegado a la meta!", font = ("Arial", 15), bg = "gray10", fg = "snow")
+
+    siguiente = tk.Button(pantalla, text = "Siguiente", font = ("Arial", 15), command = lambda: pasarGen(generacionLabel, finalLabel))
     siguiente.place(x = 850, y = 540)
 
 def validarEntrada():

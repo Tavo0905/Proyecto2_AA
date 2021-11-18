@@ -12,6 +12,27 @@ import random as r
 
 ###################### Funciones ###########################
 
+def decABin(num):
+    binario = 0
+    exp = 0
+    while num > 0:
+        binario += (num % 2) * (10 ** exp)
+        num //= 2
+        exp += 1
+    binario = ("0" * (6 - len(str(binario)))) + str(binario)
+    return binario
+
+def binADec(num):
+    dec = 0
+    mul = 1
+    while num > 0:
+        div = num % 10
+        dec += div * mul
+        num //= 10
+        mul *= 2
+    return dec
+
+
 def mostrarImagen(imagen):
     """Despliega la informacion principal de la imagen.
             Entradas:
@@ -116,8 +137,50 @@ def fitness(poblacion, imagen, nombre):
         else:
             individuo[1] = 5
             aclarante = 175
+        imagen[centro[1], centro[0]][0] = 255
         imagen[centro[1], centro[0]][1] = imagen[centro[1], centro[0]][2] = aclarante
     cv.imwrite(nombre, imagen)
     return sorted(poblacion, key = lambda x: x[1], reverse = True)
-        
 
+def reproducir(poblacion, imagen, nombre):
+    padres = poblacion[:-4]
+    hijos = []
+    final = False
+    while len(hijos) < 10:
+        padre1 = padres[r.randint(0, 5)]
+        padre2 = padres[r.randint(0, 5)]
+        while padre2 == padre1:
+            padre2 = padres[r.randint(0, 5)]
+        x1 = decABin(padre1[0][0])
+        x2 = decABin(padre2[0][0])
+        divisor = r.randint(2, 4)
+        Xhijo1 = binADec(int(x1[:divisor] + x2[divisor:]))
+        Xhijo2 = binADec(int(x2[:divisor] + x1[divisor:]))
+        y1 = decABin(padre1[0][1])
+        y2 = decABin(padre2[0][1])
+        Yhijo1 = binADec(int(y1[:divisor] + y2[divisor:]))
+        Yhijo2 = binADec(int(y2[:divisor] + y1[divisor:]))
+        if r.uniform(0.0, 1.0) > 0.9:
+            Xhijo1 += r.randint(-4, 4)
+            Yhijo1 += r.randint(-4, 4)
+        if r.uniform(0.0, 1.0) > 0.9:
+            Xhijo2 += r.randint(-4, 4)
+            Yhijo2 += r.randint(-4, 4)
+        if Xhijo1 >= 50 or Xhijo2 >= 50:
+            continue
+        if Yhijo1 >= 50 or Yhijo2 >= 50:
+            continue
+        if (imagen[Yhijo1, Xhijo1][0] == 255 and imagen[Yhijo1, Xhijo1][1] == 255 and imagen[Yhijo1, Xhijo1][2] == 255) or\
+           (imagen[Yhijo1, Xhijo1][0] == 0 and imagen[Yhijo1, Xhijo1][1] == 0 and imagen[Yhijo1, Xhijo1][2] == 255):
+            hijos.append([[Xhijo1, Yhijo1], 100])
+        if (imagen[Yhijo2, Xhijo2][0] == 255 and imagen[Yhijo2, Xhijo2][1] == 255 and imagen[Yhijo2, Xhijo2][2] == 255) or\
+           (imagen[Yhijo2, Xhijo2][0] == 0 and imagen[Yhijo2, Xhijo2][1] == 0 and imagen[Yhijo2, Xhijo2][2] == 255):
+            hijos.append([[Xhijo2, Yhijo2], 100])
+        if (imagen[Yhijo1, Xhijo1][0] == 0 and imagen[Yhijo1, Xhijo1][1] == 255 and imagen[Yhijo1, Xhijo1][2] == 0):
+                final = True
+                hijos.append([[Xhijo1, Yhijo1], 100])
+        if (imagen[Yhijo2, Xhijo2][0] == 0 and imagen[Yhijo2, Xhijo2][1] == 255 and imagen[Yhijo2, Xhijo2][2] == 0):
+                final = True
+                hijos.append([[Xhijo2, Yhijo2], 100])
+    hijos = fitness(hijos, imagen, nombre)
+    return hijos, final
