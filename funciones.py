@@ -12,6 +12,7 @@ import random as r
 
 ###################### Funciones ###########################
 
+#pasa un número de decimal (int) a binario (string)
 def decABin(num):
     binario = 0
     exp = 0
@@ -22,6 +23,7 @@ def decABin(num):
     binario = ("0" * (6 - len(str(binario)))) + str(binario)
     return binario
 
+#pasa un número de binario (int) a decimal (int)
 def binADec(num):
     dec = 0
     mul = 1
@@ -113,10 +115,14 @@ def fitness(poblacion, imagen, nombre):
         pixelesNegros = 0
         centro = individuo[0]
         aclarante = 0
+
+        #buscamos la cantidad de pixeles negros en un radio de 2 pixeles
         for x in range(centro[1] - 2, centro[1] + 3):
             for y in range(centro[0] - 2, centro[0] + 3):
                 if imagen[x, y][0] == 0 and imagen[x, y][2] == 0 and imagen[x, y][2] == 0:
                     pixelesNegros += 1
+
+        #entre más pixeles negros, menos apto es el individuo
         if pixelesNegros == 0:
             pass
         elif 0 < pixelesNegros <= 2:
@@ -137,6 +143,8 @@ def fitness(poblacion, imagen, nombre):
         else:
             individuo[1] = 5
             aclarante = 175
+
+        #pintamos el individuo en la imagen
         imagen[centro[1], centro[0]][0] = 255
         imagen[centro[1], centro[0]][1] = imagen[centro[1], centro[0]][2] = aclarante
     cv.imwrite(nombre, imagen)
@@ -146,11 +154,15 @@ def reproducir(poblacion, imagen, nombre):
     padres = poblacion[:-4]
     hijos = []
     final = False
+    
+    #reproducimos los padres hasta tener 10 hijos
     while len(hijos) < 10:
         padre1 = padres[r.randint(0, 5)]
         padre2 = padres[r.randint(0, 5)]
         while padre2 == padre1:
             padre2 = padres[r.randint(0, 5)]
+
+        #hacemos el cruce de los dos padres
         x1 = decABin(padre1[0][0])
         x2 = decABin(padre2[0][0])
         divisor = r.randint(2, 4)
@@ -160,27 +172,38 @@ def reproducir(poblacion, imagen, nombre):
         y2 = decABin(padre2[0][1])
         Yhijo1 = binADec(int(y1[:divisor] + y2[divisor:]))
         Yhijo2 = binADec(int(y2[:divisor] + y1[divisor:]))
+
+        #hay una probabilidad del 10% de una mutación
         if r.uniform(0.0, 1.0) > 0.9:
             Xhijo1 += r.randint(-4, 4)
             Yhijo1 += r.randint(-4, 4)
         if r.uniform(0.0, 1.0) > 0.9:
             Xhijo2 += r.randint(-4, 4)
             Yhijo2 += r.randint(-4, 4)
+
+        #si algún hijo quedó fuera de la imagen entonces no se toman en cuenta
         if Xhijo1 >= 50 or Xhijo2 >= 50:
             continue
         if Yhijo1 >= 50 or Yhijo2 >= 50:
             continue
+
+        #si el hijo 1 está en un pixel blanco o rojo está bien
         if (imagen[Yhijo1, Xhijo1][0] == 255 and imagen[Yhijo1, Xhijo1][1] == 255 and imagen[Yhijo1, Xhijo1][2] == 255) or\
            (imagen[Yhijo1, Xhijo1][0] == 0 and imagen[Yhijo1, Xhijo1][1] == 0 and imagen[Yhijo1, Xhijo1][2] == 255):
             hijos.append([[Xhijo1, Yhijo1], 100])
+        #si el hijo 2 está en un pixel blanco o rojo está bien
         if (imagen[Yhijo2, Xhijo2][0] == 255 and imagen[Yhijo2, Xhijo2][1] == 255 and imagen[Yhijo2, Xhijo2][2] == 255) or\
            (imagen[Yhijo2, Xhijo2][0] == 0 and imagen[Yhijo2, Xhijo2][1] == 0 and imagen[Yhijo2, Xhijo2][2] == 255):
             hijos.append([[Xhijo2, Yhijo2], 100])
+        #si el hijo 1 está en un pixel verde es que se llegó al final
         if (imagen[Yhijo1, Xhijo1][0] == 0 and imagen[Yhijo1, Xhijo1][1] == 255 and imagen[Yhijo1, Xhijo1][2] == 0):
                 final = True
                 hijos.append([[Xhijo1, Yhijo1], 100])
+        #si el hijo 2 está en un pixel verde es que se llegó al final
         if (imagen[Yhijo2, Xhijo2][0] == 0 and imagen[Yhijo2, Xhijo2][1] == 255 and imagen[Yhijo2, Xhijo2][2] == 0):
                 final = True
                 hijos.append([[Xhijo2, Yhijo2], 100])
+    
+    #al tener los hijos, se les aplica la función de fitness
     hijos = fitness(hijos, imagen, nombre)
     return hijos, final
