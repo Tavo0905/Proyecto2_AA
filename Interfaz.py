@@ -31,11 +31,10 @@ class ADN:
     """Corresponde a los parámetros a tomar en cuenta para el avance del algoritmo
        genético relacionado con los individuos."""
 
-    def __init__(self, objetivo = False, individuos = 10, pob = [], mutacion = 0.2, gen = 50):
+    def __init__(self, objetivo = False, individuos = 10, pob = [], gen = 50):
         self.final = objetivo
         self.numIndividuos = individuos
         self.poblacion = pob
-        self.probMutar = mutacion
         self.generaciones = gen
         self.genActual = 0
    
