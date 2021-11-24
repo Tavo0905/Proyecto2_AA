@@ -41,7 +41,7 @@ class ADN:
 
 ############ CREACION DE FUNCIONES ###########
 
-def pasarGen(genLabel, finLabel):
+def pasarGen(genLabel, finLabel, sigButton):
     """Se encarga de pasar las generaciones de los individuos
         Entradas:
             -Label indicando la generación
@@ -68,6 +68,9 @@ def pasarGen(genLabel, finLabel):
         zoom = cv.resize(baseDatos.imagen, None, fx = 7, fy = 7, interpolation = cv.INTER_LINEAR)
         cv.imshow("Laberinto", zoom)
         print(adn.poblacion)
+    
+    if adn.genActual == 50:
+        sigButton["state"] = "disabled"
         
 
 def analisisImagen():
@@ -83,7 +86,7 @@ def analisisImagen():
 
     finalLabel = tk.Label(pantalla, text = "Un individuo a llegado a la meta!", font = ("Arial", 15), bg = "gray10", fg = "snow")
 
-    siguiente = tk.Button(pantalla, text = "Siguiente", font = ("Arial", 15), command = lambda: pasarGen(generacionLabel, finalLabel))
+    siguiente = tk.Button(pantalla, text = "Siguiente", font = ("Arial", 15), command = lambda: pasarGen(generacionLabel, finalLabel, siguiente))
     siguiente.place(x = 850, y = 540)
 
 def validarEntrada():
