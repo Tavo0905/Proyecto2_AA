@@ -91,7 +91,6 @@ def crearPoblacion(nombre, imagen, numIndividuos):
     inicio = determinarInicio(imagen)
     poblacion = []
     for i in range(numIndividuos):
-        print(len(inicio))
         pixelAleatorio = r.choice(inicio)
         if pixelAleatorio in poblacion:
             continue
