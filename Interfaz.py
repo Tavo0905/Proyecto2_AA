@@ -62,15 +62,15 @@ def pasarGen(genLabel, finLabel, sigButton):
         adn.poblacion, adn.final = func.reproducir(adn.poblacion, baseDatos.imagen, baseDatos.archivo)
         if adn.final:
             finLabel.place(x = 300, y = 200)
-        if adn.genActual >= 50:
+        if adn.genActual >= adn.generaciones:
             finLabel.config(text = "Ningún individuo ha llegado al final del laberinto.")
             finLabel.place(x = 300, y = 200)
+            sigButton["state"] = "disabled"
         zoom = cv.resize(baseDatos.imagen, None, fx = 7, fy = 7, interpolation = cv.INTER_LINEAR)
         cv.imshow("Laberinto", zoom)
         print(adn.poblacion)
     
-    if adn.genActual == 50:
-        sigButton["state"] = "disabled"
+        
         
 
 def analisisImagen():

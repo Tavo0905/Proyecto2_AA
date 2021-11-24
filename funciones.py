@@ -70,15 +70,6 @@ def determinarInicio(imagen):
                 inicio.append([y, x])
     return inicio
 
-def determinarFinal(imagen, poblacion):
-    """Determina el final del algoritmo.
-        Entradas:
-            -Población
-        Salidas:
-            -Bool
-    """
-    return
-
 def crearPoblacion(nombre, imagen, numIndividuos):
     """Crea la población inicial.
         Entradas:
